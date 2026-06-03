@@ -198,7 +198,7 @@ animated.push({
   mesh: waterfall,
   animateFn: (time) => {
     const flow = (time * 0.00038) % 1;
-    waterfallTexture.offset.y = -flow;
+    waterfallTexture.offset.y = flow;
     waterfallMaterial.opacity = 0.88 + Math.sin(time * 0.004) * 0.08;
     waterfallMist.material.opacity = 0.28 + Math.sin(time * 0.003 + 1) * 0.1;
   },
