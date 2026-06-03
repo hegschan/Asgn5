@@ -302,6 +302,18 @@ function createOldMan() {
     new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.04, 0.02), new THREE.MeshStandardMaterial({ color: 0x8b0000 })),
     man, [0, 0.64, 0.1]
   );
+  addFigurePart(
+    new THREE.Mesh(
+      new THREE.SphereGeometry(0.05, 10, 10),
+      new THREE.MeshStandardMaterial({
+        color: 0x39ff14,
+        emissive: 0x39ff14,
+        emissiveIntensity: 0.65,
+        roughness: 0.25,
+      })
+    ),
+    man, [0.31, 0.05, 0]
+  );
   return man;
 }
 
@@ -309,7 +321,7 @@ function createYoungBoy() {
   const boy = new THREE.Group();
   const uniform = new THREE.MeshStandardMaterial({ color: 0xd45c00, roughness: 0.8 });
   const sash = new THREE.MeshStandardMaterial({ color: 0xffa726, roughness: 0.75 });
-  const skin = new THREE.MeshStandardMaterial({ color: 0xf1c27d, roughness: 0.75 });
+  const skin = new THREE.MeshStandardMaterial({ color: 0xffb9a0, roughness: 0.75 });
   const cap = new THREE.MeshStandardMaterial({ color: 0xffe066, roughness: 0.7 });
   const pack = new THREE.MeshStandardMaterial({ color: 0x6d4c2d, roughness: 0.9 });
 
