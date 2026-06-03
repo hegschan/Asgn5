@@ -67,7 +67,7 @@ function loadColorTexture(path, options = {}) {
 }
 
 const woodTexture = loadColorTexture('textures/hardwood.jpg', { repeat: [2, 2] });
-const cliffTexture = loadColorTexture('textures/cliff_rock.jpg', { repeat: [2, 2.5] });
+const cliffTexture = loadColorTexture('textures/cliff_rock.jpg', { repeat: [1.15, 1.65] });
 const waterfallTexture = loadColorTexture('textures/waterfall.jpg', { repeat: [1, 2.8] });
 
 // Seamless photographic sky (equirect — no cubemap edge lines)
@@ -146,7 +146,7 @@ lawn.receiveShadow = true;
 const tepui = addToScene(
   new THREE.Mesh(
     new THREE.BoxGeometry(10, 14, 6),
-    new THREE.MeshStandardMaterial({ map: cliffTexture, roughness: 0.92, metalness: 0.03 })
+    new THREE.MeshStandardMaterial({ map: cliffTexture, roughness: 0.94, metalness: 0.02 })
   )
 );
 tepui.position.set(-16, 7, -14);
