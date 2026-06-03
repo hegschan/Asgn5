@@ -48,7 +48,7 @@ document.body.appendChild(renderer.domElement);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.06;
-controls.target.set(0, 8, 0);
+controls.target.set(8, 4.5, -2);
 controls.maxPolarAngle = Math.PI * 0.48;
 controls.minDistance = 8;
 controls.maxDistance = 85;
@@ -447,6 +447,182 @@ function createDoberman() {
   dog.add(br);
 
   dog.userData.legs = { fl, fr, bl, br };
+  return dog;
+}
+
+function createRottweiler() {
+  const dog = new THREE.Group();
+  const black = new THREE.MeshStandardMaterial({ color: 0x1c1c1c, roughness: 0.58, metalness: 0.06 });
+  const tan = new THREE.MeshStandardMaterial({ color: 0xb8925a, roughness: 0.65 });
+  const nose = new THREE.MeshStandardMaterial({ color: 0x0f0f0f, roughness: 0.45 });
+
+  addFigurePart(
+    new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.26, 0.24), black),
+    dog, [0, 0.3, 0]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.18, 0.2), black),
+    dog, [0.3, 0.36, 0]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.SphereGeometry(0.15, 12, 12), black),
+    dog, [0.42, 0.42, 0]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.05, 0.12), tan),
+    dog, [0.52, 0.36, 0.02]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 8), nose),
+    dog, [0.56, 0.34, 0.05]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.04, 0.08), tan),
+    dog, [0.44, 0.46, 0.05], [0, 0, 0.15]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.04, 0.08), tan),
+    dog, [0.44, 0.46, -0.05], [0, 0, -0.15]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.06, 0.05), tan),
+    dog, [0.48, 0.4, 0.07]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.06, 0.05), tan),
+    dog, [0.48, 0.4, -0.07]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.14, 0.1), tan),
+    dog, [0.02, 0.26, 0]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.1, 0.05), tan),
+    dog, [0.22, 0.18, 0.09]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.1, 0.05), tan),
+    dog, [0.22, 0.18, -0.09]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.04, 0.26, 6), black),
+    dog, [-0.26, 0.36, 0], [0.45, 0, 0]
+  );
+
+  const fl = createLegGroup(black, 0.19, 0.05);
+  fl.position.set(0.24, 0.2, 0.09);
+  dog.add(fl);
+  const fr = createLegGroup(black, 0.19, 0.05);
+  fr.position.set(0.24, 0.2, -0.09);
+  dog.add(fr);
+  const bl = createLegGroup(black, 0.19, 0.05);
+  bl.position.set(-0.22, 0.2, 0.09);
+  dog.add(bl);
+  const br = createLegGroup(black, 0.19, 0.05);
+  br.position.set(-0.22, 0.2, -0.09);
+  dog.add(br);
+
+  const tail = new THREE.Group();
+  tail.position.set(-0.28, 0.38, 0);
+  const tailMesh = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.02, 0.035, 0.2, 6),
+    black
+  );
+  tailMesh.position.set(0, 0.08, 0);
+  tailMesh.rotation.x = 0.7;
+  track(tailMesh);
+  tail.add(tailMesh);
+  dog.add(tail);
+  dog.userData.legs = { fl, fr, bl, br };
+  dog.userData.tail = tail;
+  return dog;
+}
+
+function createEnglishBulldog() {
+  const dog = new THREE.Group();
+  const fawn = new THREE.MeshStandardMaterial({ color: 0xc4a070, roughness: 0.78 });
+  const white = new THREE.MeshStandardMaterial({ color: 0xf2ebe0, roughness: 0.8 });
+  const dark = new THREE.MeshStandardMaterial({ color: 0x3d2e24, roughness: 0.7 });
+  const nose = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.5 });
+
+  addFigurePart(
+    new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.2, 0.32), fawn),
+    dog, [0, 0.18, 0]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.2, 0.26), fawn),
+    dog, [0.22, 0.24, 0]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.SphereGeometry(0.17, 12, 10), fawn),
+    dog, [0.34, 0.3, 0]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.1, 0.18), white),
+    dog, [0.42, 0.24, 0]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.06, 0.14), dark),
+    dog, [0.48, 0.28, 0]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 8), nose),
+    dog, [0.54, 0.22, 0.04]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.SphereGeometry(0.04, 8, 8), dark),
+    dog, [0.46, 0.32, 0.06]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.SphereGeometry(0.04, 8, 8), dark),
+    dog, [0.46, 0.32, -0.06]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 8), dark),
+    dog, [0.5, 0.26, 0.05]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 8), dark),
+    dog, [0.5, 0.26, -0.05]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.05, 0.04), fawn),
+    dog, [0.32, 0.38, 0.1], [0, 0, 0.35]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.05, 0.04), fawn),
+    dog, [0.32, 0.38, -0.1], [0, 0, -0.35]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.045, 0.12, 6), fawn),
+    dog, [0.2, 0.1, 0.11]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.045, 0.12, 6), fawn),
+    dog, [0.2, 0.1, -0.11]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.045, 0.12, 6), fawn),
+    dog, [-0.14, 0.1, 0.11]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.045, 0.12, 6), fawn),
+    dog, [-0.14, 0.1, -0.11]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.03, 0.1, 6), fawn),
+    dog, [-0.28, 0.22, 0], [0.8, 0, 0]
+  );
+  return dog;
+}
+
+function placeVillainDog(dog, x, z, scale = 1.12) {
+  dog.position.set(x, 0, z);
+  dog.scale.setScalar(scale);
+  const dx = camera.position.x - x;
+  const dz = camera.position.z - z;
+  dog.rotation.y = Math.atan2(dz, dx) - Math.PI / 2;
+  scene.add(dog);
   return dog;
 }
 
@@ -929,13 +1105,39 @@ for (let i = 0; i < 5; i++) {
   ).position.set(berryCenterX + i * 0.35, 0.15, berryCenterZ + (i % 2) * 0.4);
 }
 
-// Doberman patrol (Up villain dogs — Alpha-style) near the red berries
+// Villain dog pack (Up-style) near red berries — away from yard golden retriever (z ≈ 8.5)
 const doberman = createDoberman();
 const dobermanPatrol = { x: berryCenterX + 0.5, z: berryCenterZ + 0.8 };
 const dobermanRadius = 1.6;
+doberman.scale.setScalar(1.12);
 doberman.position.set(dobermanPatrol.x + dobermanRadius, 0, dobermanPatrol.z);
-doberman.rotation.y = Math.PI / 2;
+doberman.rotation.y = -Math.PI / 2;
 scene.add(doberman);
+
+const rottweiler = placeVillainDog(createRottweiler(), berryCenterX - 2.1, berryCenterZ + 2.2, 1.14);
+const bulldog = placeVillainDog(createEnglishBulldog(), berryCenterX + 2.0, berryCenterZ + 2.0, 1.2);
+
+animated.push({
+  mesh: rottweiler,
+  animateFn: (time) => {
+    const s = Math.sin(time * 0.004) * 0.35;
+    rottweiler.userData.tail.rotation.z = s;
+    const stride = Math.sin(time * 0.005) * 0.25;
+    const { fl, fr, bl, br } = rottweiler.userData.legs;
+    fl.rotation.x = stride;
+    fr.rotation.x = -stride;
+    bl.rotation.x = -stride * 0.6;
+    br.rotation.x = stride * 0.6;
+  },
+});
+
+animated.push({
+  mesh: bulldog,
+  animateFn: (time) => {
+    bulldog.position.y = Math.sin(time * 0.0025) * 0.02;
+    bulldog.rotation.z = Math.sin(time * 0.003) * 0.03;
+  },
+});
 
 animated.push({
   mesh: doberman,
@@ -943,7 +1145,7 @@ animated.push({
     const t = time * 0.0014;
     doberman.position.x = dobermanPatrol.x + Math.cos(t) * dobermanRadius;
     doberman.position.z = dobermanPatrol.z + Math.sin(t) * dobermanRadius;
-    doberman.rotation.y = -t + Math.PI / 2;
+    doberman.rotation.y = -t - Math.PI / 2;
 
     const stride = Math.sin(t * 9) * 0.55;
     const { fl, fr, bl, br } = doberman.userData.legs;
