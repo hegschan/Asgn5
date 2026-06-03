@@ -19,7 +19,7 @@ const UP = {
 };
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0xc9a080, 42, 120);
+scene.fog = new THREE.Fog(0xb8d4ec, 40, 118);
 
 const camera = new THREE.PerspectiveCamera(
   58,
@@ -79,11 +79,11 @@ scene.background = skybox;
 const ambientLight = new THREE.AmbientLight(0xfff5e6, 0.32);
 scene.add(ambientLight);
 
-const hemisphereLight = new THREE.HemisphereLight(0xffc89a, UP.grass, 0.55);
+const hemisphereLight = new THREE.HemisphereLight(0x9fd4ff, UP.grass, 0.52);
 scene.add(hemisphereLight);
 
-const sunLight = new THREE.DirectionalLight(0xffb88a, 1.4);
-sunLight.position.set(-12, 18, 20);
+const sunLight = new THREE.DirectionalLight(0xfff4e0, 1.35);
+sunLight.position.set(14, 28, 10);
 sunLight.castShadow = true;
 sunLight.shadow.mapSize.set(2048, 2048);
 sunLight.shadow.camera.near = 2;
