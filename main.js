@@ -29,16 +29,22 @@ controls.minDistance = 6;
 controls.maxDistance = 60;
 
 const textureLoader = new THREE.TextureLoader();
-const uvTexture = textureLoader.load('textures/uv_grid.jpg');
-uvTexture.colorSpace = THREE.SRGBColorSpace;
-uvTexture.wrapS = THREE.RepeatWrapping;
-uvTexture.wrapT = THREE.RepeatWrapping;
 
-const woodTexture = textureLoader.load('textures/hardwood.jpg');
-woodTexture.colorSpace = THREE.SRGBColorSpace;
-woodTexture.wrapS = THREE.RepeatWrapping;
-woodTexture.wrapT = THREE.RepeatWrapping;
-woodTexture.repeat.set(4, 4);
+function loadColorTexture(path, options = {}) {
+  const texture = textureLoader.load(path);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.minFilter = THREE.LinearMipmapLinearFilter;
+  texture.magFilter = THREE.LinearFilter;
+  if (options.repeat) {
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(options.repeat[0], options.repeat[1]);
+  }
+  return texture;
+}
+
+const uvTexture = loadColorTexture('textures/uv_grid.jpg');
+const woodTexture = loadColorTexture('textures/hardwood.jpg', { repeat: [4, 4] });
 
 const skyboxLoader = new THREE.CubeTextureLoader();
 const skybox = skyboxLoader.load([
@@ -81,6 +87,48 @@ spotLight.target.position.set(0, 1.5, 0);
 spotLight.castShadow = true;
 scene.add(spotLight);
 scene.add(spotLight.target);
+
+// --- Fundamentals tutorial: multiple animated cubes + directional light (sunLight) ---
+const fundamentalsCubes = [];
+const cubeColors = [0x00ff88, 0xff4488, 0x4488ff, 0xffcc00];
+for (let i = 0; i < 4; i++) {
+  const cube = new THREE.Mesh(
+    new THREE.BoxGeometry(0.7, 0.7, 0.7),
+    new THREE.MeshStandardMaterial({ color: cubeColors[i], roughness: 0.4, metalness: 0.15 })
+  );
+  cube.position.set(-11 + i * 1.6, 1.1, 9);
+  cube.castShadow = true;
+  cube.receiveShadow = true;
+  scene.add(cube);
+  fundamentalsCubes.push(cube);
+}
+
+// --- Textures tutorial: one texture on all faces, then six different face textures ---
+const singleTextureCube = new THREE.Mesh(
+  new THREE.BoxGeometry(1.2, 1.2, 1.2),
+  new THREE.MeshStandardMaterial({ map: uvTexture, roughness: 0.5, metalness: 0.1 })
+);
+singleTextureCube.position.set(10, 1.4, 8);
+singleTextureCube.castShadow = true;
+singleTextureCube.receiveShadow = true;
+scene.add(singleTextureCube);
+
+const skyboxFacePaths = [
+  'textures/skybox/posx.jpg',
+  'textures/skybox/negx.jpg',
+  'textures/skybox/posy.jpg',
+  'textures/skybox/negy.jpg',
+  'textures/skybox/posz.jpg',
+  'textures/skybox/negz.jpg',
+];
+const sixFaceMaterials = skyboxFacePaths.map((path) =>
+  new THREE.MeshStandardMaterial({ map: loadColorTexture(path), roughness: 0.45, metalness: 0.05 })
+);
+const multiFaceCube = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.6, 1.6), sixFaceMaterials);
+multiFaceCube.position.set(12, 1.6, 6);
+multiFaceCube.castShadow = true;
+multiFaceCube.receiveShadow = true;
+scene.add(multiFaceCube);
 
 const ground = new THREE.Mesh(
   new THREE.CircleGeometry(28, 64),
@@ -229,6 +277,7 @@ pedestal.castShadow = true;
 pedestal.receiveShadow = true;
 scene.add(pedestal);
 
+// --- Load custom 3D model (GLTFLoader / .glb) ---
 const loader = new GLTFLoader();
 loader.load(
   'models/Duck.glb',
@@ -265,6 +314,15 @@ window.addEventListener('resize', () => {
 });
 
 function animate(time) {
+  fundamentalsCubes.forEach((cube, i) => {
+    cube.rotation.x = time / 2000 + i * 0.2;
+    cube.rotation.y = time / 1000 + i * 0.35;
+  });
+
+  singleTextureCube.rotation.y = time * 0.0008;
+  multiFaceCube.rotation.x = time * 0.0005;
+  multiFaceCube.rotation.y = time * 0.0009;
+
   animatedObjects.forEach(({ animateFn }) => animateFn(time));
 
   pointLight.intensity = 40 + Math.sin(time * 0.002) * 8;
