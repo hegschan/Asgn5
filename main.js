@@ -19,7 +19,7 @@ const UP = {
 };
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0xc9e4f0, 35, 120);
+scene.fog = new THREE.Fog(0xb5daf5, 38, 115);
 
 const camera = new THREE.PerspectiveCamera(
   58,
