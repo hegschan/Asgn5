@@ -1,5 +1,9 @@
 # CSE160 Assignment 5 — *Up* Adventure World
 
+## Author
+
+Hegen Chang
+
 A Three.js 3D scene inspired by Pixar’s [*Up*]: Carl’s balloon-lifted house, Paradise Falls, a Spirit of Adventure–style blimp, animated wildlife, and a large explorable environment.
 
 ## Live demo
@@ -83,7 +87,3 @@ Asgn5/
 | Three.js library | [threejs.org](https://threejs.org/) | MIT |
 
 See also `models/README.md`, `textures/README.md`, and `textures/skybox/README.md`.
-
-## Author
-
-Hegen Chang
