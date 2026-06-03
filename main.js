@@ -263,22 +263,111 @@ const mailbox = addToScene(
 );
 mailbox.position.set(7, 1.15, 6);
 
-for (let g = 0; g < 3; g++) {
-  const gnomeHat = addToScene(
-    new THREE.Mesh(
-      new THREE.ConeGeometry(0.18, 0.28, 10),
-      new THREE.MeshStandardMaterial({ color: 0xe63946 })
-    )
-  );
-  gnomeHat.position.set(5.5 + g * 0.9, 0.35, 8.5);
-  const gnomeBody = addToScene(
-    new THREE.Mesh(
-      new THREE.SphereGeometry(0.2, 12, 12),
-      new THREE.MeshStandardMaterial({ color: 0xf1faee })
-    )
-  );
-  gnomeBody.position.set(5.5 + g * 0.9, 0.18, 8.5);
+// Yard figures: old man, young boy, golden retriever (replacing gnomes)
+function addFigurePart(mesh, parent, localPos, localRot = [0, 0, 0]) {
+  track(mesh);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  mesh.position.set(...localPos);
+  mesh.rotation.set(...localRot);
+  parent.add(mesh);
+  return mesh;
 }
+
+function createOldMan() {
+  const man = new THREE.Group();
+  const suit = new THREE.MeshStandardMaterial({ color: 0x4a4a5a, roughness: 0.85 });
+  const shirt = new THREE.MeshStandardMaterial({ color: 0xf5f0e6, roughness: 0.8 });
+  const skin = new THREE.MeshStandardMaterial({ color: 0xe8c4a8, roughness: 0.75 });
+  const white = new THREE.MeshStandardMaterial({ color: 0xf8f8f8, roughness: 0.7 });
+
+  addFigurePart(
+    new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.7, 6), new THREE.MeshStandardMaterial({ color: 0x5c4033 })),
+    man, [0.22, 0.35, 0], [0, 0, -0.2]
+  );
+  addFigurePart(new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.08, 0.35, 8), suit), man, [-0.08, 0.2, 0]);
+  addFigurePart(new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.08, 0.35, 8), suit), man, [0.08, 0.2, 0]);
+  addFigurePart(
+    new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.32, 0.18), suit),
+    man, [0, 0.48, 0], [0, 0, 0.08]
+  );
+  addFigurePart(new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.12, 0.14), shirt), man, [0, 0.62, 0.02]);
+  addFigurePart(new THREE.Mesh(new THREE.SphereGeometry(0.11, 12, 12), skin), man, [0, 0.78, 0.04]);
+  addFigurePart(new THREE.Mesh(new THREE.SphereGeometry(0.1, 10, 10), white), man, [0, 0.86, 0.02]);
+  addFigurePart(
+    new THREE.Mesh(new THREE.TorusGeometry(0.045, 0.012, 8, 12), new THREE.MeshStandardMaterial({ color: 0x222222 })),
+    man, [0, 0.78, 0.13]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.04, 0.02), new THREE.MeshStandardMaterial({ color: 0x8b0000 })),
+    man, [0, 0.64, 0.1]
+  );
+  return man;
+}
+
+function createYoungBoy() {
+  const boy = new THREE.Group();
+  const uniform = new THREE.MeshStandardMaterial({ color: 0xd45c00, roughness: 0.8 });
+  const sash = new THREE.MeshStandardMaterial({ color: 0xffa726, roughness: 0.75 });
+  const skin = new THREE.MeshStandardMaterial({ color: 0xf1c27d, roughness: 0.75 });
+  const cap = new THREE.MeshStandardMaterial({ color: 0xffe066, roughness: 0.7 });
+  const pack = new THREE.MeshStandardMaterial({ color: 0x6d4c2d, roughness: 0.9 });
+
+  addFigurePart(new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.055, 0.22, 8), uniform), boy, [-0.07, 0.14, 0]);
+  addFigurePart(new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.055, 0.22, 8), uniform), boy, [0.07, 0.14, 0]);
+  addFigurePart(new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.28, 0.16), uniform), boy, [0, 0.34, 0]);
+  addFigurePart(new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.22, 0.12), sash), boy, [0, 0.36, 0.09]);
+  addFigurePart(new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.22, 0.14), pack), boy, [0, 0.38, -0.1]);
+  addFigurePart(new THREE.Mesh(new THREE.SphereGeometry(0.09, 12, 12), skin), boy, [0, 0.52, 0.02]);
+  addFigurePart(
+    new THREE.Mesh(new THREE.SphereGeometry(0.1, 10, 8, 0, Math.PI * 2, 0, Math.PI / 2), cap),
+    boy, [0, 0.6, 0.02]
+  );
+  return boy;
+}
+
+function createGoldenRetriever() {
+  const dog = new THREE.Group();
+  const fur = new THREE.MeshStandardMaterial({ color: 0xe8b84a, roughness: 0.82 });
+  const furLight = new THREE.MeshStandardMaterial({ color: 0xf5d78e, roughness: 0.8 });
+  const nose = new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.5 });
+  const legMat = fur;
+
+  addFigurePart(new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.2, 0.18), fur), dog, [0, 0.22, 0]);
+  addFigurePart(new THREE.Mesh(new THREE.SphereGeometry(0.12, 12, 12), furLight), dog, [0.2, 0.28, 0]);
+  addFigurePart(new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.07, 0.14), furLight), dog, [0.28, 0.26, 0]);
+  addFigurePart(new THREE.Mesh(new THREE.SphereGeometry(0.03, 8, 8), nose), dog, [0.34, 0.25, 0]);
+  addFigurePart(
+    new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 8), fur),
+    dog, [0.14, 0.34, 0.06], [0, 0, 0.4]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 8), fur),
+    dog, [0.14, 0.34, -0.06], [0, 0, -0.4]
+  );
+  addFigurePart(new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.035, 0.16, 6), legMat), dog, [0.1, 0.08, 0.07]);
+  addFigurePart(new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.035, 0.16, 6), legMat), dog, [0.1, 0.08, -0.07]);
+  addFigurePart(new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.035, 0.16, 6), legMat), dog, [-0.1, 0.08, 0.07]);
+  addFigurePart(new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.035, 0.16, 6), legMat), dog, [-0.1, 0.08, -0.07]);
+  addFigurePart(
+    new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.04, 0.2, 6), furLight),
+    dog, [-0.22, 0.3, 0], [0.6, 0, 0]
+  );
+  addFigurePart(new THREE.Mesh(new THREE.SphereGeometry(0.04, 8, 8), nose), dog, [0.36, 0.24, 0.04]);
+  return dog;
+}
+
+const yardFigures = [
+  { figure: createOldMan(), x: 5.5 },
+  { figure: createYoungBoy(), x: 6.4 },
+  { figure: createGoldenRetriever(), x: 7.3 },
+];
+
+yardFigures.forEach(({ figure, x }) => {
+  figure.position.set(x, 0, 8.5);
+  figure.rotation.y = -0.35;
+  scene.add(figure);
+});
 
 // Balloons lifting the house — many pastel balloons in layered clusters
 const balloonGroup = new THREE.Group();
