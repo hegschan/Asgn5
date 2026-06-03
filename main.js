@@ -67,7 +67,8 @@ function loadColorTexture(path, options = {}) {
 }
 
 const woodTexture = loadColorTexture('textures/hardwood.jpg', { repeat: [2, 2] });
-const rockTexture = loadColorTexture('textures/uv_grid.jpg', { repeat: [3, 3] });
+const cliffTexture = loadColorTexture('textures/cliff_rock.jpg', { repeat: [2, 2.5] });
+const waterfallTexture = loadColorTexture('textures/waterfall.jpg', { repeat: [1, 2.8] });
 
 // Seamless photographic sky (equirect — no cubemap edge lines)
 const skyEquirect = loadColorTexture('textures/skybox/sky_equirect.jpg');
@@ -141,36 +142,59 @@ const lawn = addToScene(
 lawn.rotation.x = -Math.PI / 2;
 lawn.receiveShadow = true;
 
-// Paradise Falls tepui (textured cliff)
+// Paradise Falls tepui (seamless cliff rock)
 const tepui = addToScene(
   new THREE.Mesh(
     new THREE.BoxGeometry(10, 14, 6),
-    new THREE.MeshStandardMaterial({ map: rockTexture, roughness: 0.88, metalness: 0.05 })
+    new THREE.MeshStandardMaterial({ map: cliffTexture, roughness: 0.92, metalness: 0.03 })
   )
 );
 tepui.position.set(-16, 7, -14);
 tepui.rotation.y = 0.35;
 
+const waterfallMaterial = new THREE.MeshStandardMaterial({
+  map: waterfallTexture,
+  transparent: true,
+  opacity: 0.94,
+  roughness: 0.06,
+  metalness: 0.14,
+  side: THREE.DoubleSide,
+  emissive: 0x5599bb,
+  emissiveIntensity: 0.14,
+  depthWrite: true,
+});
+
 const waterfall = addToScene(
+  new THREE.Mesh(new THREE.PlaneGeometry(3.8, 10), waterfallMaterial)
+);
+waterfall.position.set(-14.2, 6.2, -11.2);
+waterfall.rotation.y = 0.35;
+
+const waterfallMist = addToScene(
   new THREE.Mesh(
-    new THREE.PlaneGeometry(3.5, 9),
+    new THREE.PlaneGeometry(4.6, 3.2),
     new THREE.MeshStandardMaterial({
-      color: 0x7ec8e3,
+      map: waterfallTexture,
       transparent: true,
-      opacity: 0.65,
-      roughness: 0.1,
-      metalness: 0.2,
+      opacity: 0.35,
+      roughness: 0.2,
+      metalness: 0.05,
       side: THREE.DoubleSide,
+      depthWrite: false,
+      color: 0xcceeff,
     })
   )
 );
-waterfall.position.set(-14.2, 6, -11.2);
-waterfall.rotation.y = 0.35;
+waterfallMist.position.set(-14.0, 2.2, -11.0);
+waterfallMist.rotation.y = 0.35;
 
 animated.push({
   mesh: waterfall,
   animateFn: (time) => {
-    waterfall.material.opacity = 0.55 + Math.sin(time * 0.004) * 0.12;
+    const flow = (time * 0.00038) % 1;
+    waterfallTexture.offset.y = -flow;
+    waterfallMaterial.opacity = 0.88 + Math.sin(time * 0.004) * 0.08;
+    waterfallMist.material.opacity = 0.28 + Math.sin(time * 0.003 + 1) * 0.1;
   },
 });
 
@@ -333,7 +357,7 @@ for (let r = 0; r < 6; r++) {
   const rock = addToScene(
     new THREE.Mesh(
       new THREE.DodecahedronGeometry(0.5 + (r % 3) * 0.15, 0),
-      new THREE.MeshStandardMaterial({ map: rockTexture, color: UP.tepui, roughness: 0.95 })
+      new THREE.MeshStandardMaterial({ map: cliffTexture, roughness: 0.96, metalness: 0.02 })
     )
   );
   rock.position.set(-10 + r * 1.8, 0.4 + (r % 2) * 0.2, -8 - r * 0.6);
