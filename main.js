@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+import { MTLLoader } from 'three/addons/loaders/MTLLoader.js';
 
 // --- Pixar "Up" adventure scene ---
 const UP = {
@@ -776,6 +778,37 @@ animated.push({
     });
   },
 });
+
+// Custom textured OBJ — Spirit of Adventure-style blimp (left sky, visible on load)
+const mtlLoader = new MTLLoader();
+mtlLoader.setPath('models/');
+mtlLoader.load('SpiritBlimp.mtl', (materials) => {
+  materials.preload();
+  const objLoader = new OBJLoader();
+  objLoader.setMaterials(materials);
+  objLoader.setPath('models/');
+  objLoader.load('SpiritBlimp.obj', (blimp) => {
+    blimp.scale.setScalar(1.4);
+    blimp.position.set(-28, 25, 16);
+    blimp.rotation.y = Math.PI / 4.5;
+    blimp.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+        if (child.material) child.material.side = THREE.DoubleSide;
+      }
+    });
+    scene.add(blimp);
+    animated.push({
+      mesh: blimp,
+      animateFn: (time) => {
+        blimp.position.x = -28 + Math.sin(time * 0.00025) * 2;
+        blimp.position.y = 25 + Math.sin(time * 0.0004) * 0.8;
+        blimp.rotation.y = Math.PI / 4.5 + Math.sin(time * 0.00015) * 0.04;
+      },
+    });
+  });
+}, undefined, (err) => console.error('SpiritBlimp load failed:', err));
 
 // Custom textured GLB — wilderness critter near the falls
 const gltfLoader = new GLTFLoader();
