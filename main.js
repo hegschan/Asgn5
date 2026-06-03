@@ -373,15 +373,44 @@ for (let t = 0; t < TREE_COUNT; t++) {
   leaves.position.set(x, trunkH + foliageH / 2 - 0.15, z);
 }
 
-for (let r = 0; r < 6; r++) {
-  const rock = addToScene(
-    new THREE.Mesh(
-      new THREE.DodecahedronGeometry(0.5 + (r % 3) * 0.15, 0),
-      new THREE.MeshStandardMaterial({ map: cliffTexture, roughness: 0.96, metalness: 0.02 })
-    )
+// Rocks scattered randomly across the map
+const ROCK_COUNT = 48;
+const rockMaterial = new THREE.MeshStandardMaterial({
+  map: cliffTexture,
+  roughness: 0.96,
+  metalness: 0.02,
+});
+
+for (let r = 0; r < ROCK_COUNT; r++) {
+  const angle = (r / ROCK_COUNT) * Math.PI * 2 + r * 0.91;
+  const dist = 5 + (r % 14) * 2.1 + Math.floor(r / 12) * 2.8;
+  const x = Math.cos(angle) * dist + ((r % 9) - 4) * 0.85;
+  const z = Math.sin(angle) * dist + ((r % 8) - 4) * 1.05;
+
+  if (Math.hypot(x - 2, z) < 5.5) continue;
+
+  const size = 0.22 + (r % 7) * 0.14;
+  const shapeType = r % 4;
+  let geometry;
+  if (shapeType === 0) {
+    geometry = new THREE.DodecahedronGeometry(size, 0);
+  } else if (shapeType === 1) {
+    geometry = new THREE.IcosahedronGeometry(size * 0.95, 0);
+  } else if (shapeType === 2) {
+    geometry = new THREE.BoxGeometry(size * 1.4, size * 0.9, size * 1.2);
+  } else {
+    geometry = new THREE.CylinderGeometry(size * 0.7, size * 1.1, size * 0.8, 8);
+  }
+
+  const rock = addToScene(new THREE.Mesh(geometry, rockMaterial));
+  const sink = size * (shapeType === 2 ? 0.35 : 0.45);
+  rock.position.set(x, size * 0.5 - sink + (r % 3) * 0.05, z);
+  rock.rotation.set(r * 0.7, r * 1.1, r * 0.4);
+  rock.scale.set(
+    0.85 + (r % 5) * 0.08,
+    0.9 + (r % 4) * 0.1,
+    0.85 + (r % 6) * 0.07
   );
-  rock.position.set(-10 + r * 1.8, 0.4 + (r % 2) * 0.2, -8 - r * 0.6);
-  rock.rotation.set(r, r * 0.5, 0);
 }
 
 // Fluffy clouds — same puff style, many clusters across the sky
