@@ -454,7 +454,7 @@ function isNaturePlacementClear(x, z) {
 }
 
 // Trees scattered across the map
-const TREE_COUNT = 95;
+const TREE_COUNT = 140;
 const treeGreens = [0x2d6a4f, 0x358f5c, 0x40916c, 0x1b4332, 0x52b788];
 
 for (let t = 0; t < TREE_COUNT; t++) {
@@ -491,7 +491,7 @@ for (let t = 0; t < TREE_COUNT; t++) {
 }
 
 // Rocks scattered randomly across the map
-const ROCK_COUNT = 110;
+const ROCK_COUNT = 155;
 const rockMaterial = new THREE.MeshStandardMaterial({
   map: cliffTexture,
   roughness: 0.96,

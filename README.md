@@ -43,7 +43,7 @@ Then visit:
 - **Spirit of Adventure blimp** : custom OBJ+MTL model in the left sky (visible on load)
 - **Procedural bird** with articulated wings
 - **Yard figures** : old man, boy, golden retriever
-- **95 trees** and **110 rocks** scattered across the map
+- **140 trees** and **155 rocks** scattered across the map
 - **42 cloud** clusters
 
 ## Project structure
