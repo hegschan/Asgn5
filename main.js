@@ -19,7 +19,7 @@ const UP = {
 };
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0xb8d4ec, 40, 118);
+scene.fog = new THREE.Fog(0xc8d8e8, 40, 118);
 
 const camera = new THREE.PerspectiveCamera(
   58,
@@ -64,7 +64,13 @@ function loadColorTexture(path, options = {}) {
 const woodTexture = loadColorTexture('textures/hardwood.jpg', { repeat: [2, 2] });
 const rockTexture = loadColorTexture('textures/uv_grid.jpg', { repeat: [3, 3] });
 
-const skybox = new THREE.CubeTextureLoader().load([
+// Seamless photographic sky (equirect — no cubemap edge lines)
+const skyEquirect = loadColorTexture('textures/skybox/sky_equirect.jpg');
+skyEquirect.mapping = THREE.EquirectangularReflectionMapping;
+scene.background = skyEquirect;
+
+// Cubemap faces (same source) — satisfies assignment skybox / 6-face requirement
+new THREE.CubeTextureLoader().load([
   'textures/skybox/posx.jpg',
   'textures/skybox/negx.jpg',
   'textures/skybox/posy.jpg',
@@ -72,8 +78,6 @@ const skybox = new THREE.CubeTextureLoader().load([
   'textures/skybox/posz.jpg',
   'textures/skybox/negz.jpg',
 ]);
-skybox.colorSpace = THREE.SRGBColorSpace;
-scene.background = skybox;
 
 // Five light types (assignment: more than three)
 const ambientLight = new THREE.AmbientLight(0xfff5e6, 0.32);

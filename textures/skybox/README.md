@@ -1,8 +1,17 @@
-# Skybox (realistic daytime sky)
+# Skybox (realistic matching sky)
 
-Photographic **equirectangular HDRI** converted to a cubemap:
+**Source:** [Overcast Soil Pure Sky](https://polyhaven.com/a/overcast_soil_puresky) — Poly Haven (CC0).  
+Even, photographic sky with soft clouds; designed as a **pure sky** HDRI (minimal ground).
 
-- **Source:** [Kloofendal 48d Partly Cloudy (Pure Sky)](https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky) on [Poly Haven](https://polyhaven.com) (CC0)
-- **Regenerate:** `python3 scripts/import_realistic_skybox.py` (requires `py360convert`, `numpy`, `Pillow`)
+| File | Use |
+|------|-----|
+| `sky_equirect.jpg` | **Displayed in the scene** — single 360° image, no visible seams between cube edges |
+| `posx.jpg` … `negz.jpg` | Six cubemap faces (same photo), for the assignment’s cubemap requirement |
 
-Face files: `posx`, `negx`, `posy`, `negy`, `posz`, `negz` (Three.js `CubeTextureLoader` order).
+**Regenerate:**
+
+```bash
+python3 scripts/import_realistic_skybox.py
+```
+
+Requires: `py360convert`, `numpy`, `Pillow`, `scipy`
