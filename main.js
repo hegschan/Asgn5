@@ -16,9 +16,9 @@ const UP = {
     0xffc8dd, 0xc3bef7, 0xf3c6c6, 0xfadadd,
   ],
   tepui: 0x6b5b4a,
-  birdBody: 0x1a2d5a,
-  birdFeather: 0x243b6e,
-  birdTip: 0x5b2d6e,
+  birdBody: 0x4d9ae8,
+  birdFeather: 0x6eb8ff,
+  birdTip: 0x8b6fd4,
   beak: 0xf4c430,
   cloud: 0xffffff,
 };
@@ -68,7 +68,7 @@ function loadColorTexture(path, options = {}) {
 
 const woodTexture = loadColorTexture('textures/hardwood.jpg', { repeat: [2, 2] });
 const cliffTexture = loadColorTexture('textures/cliff_rock.jpg', { repeat: [1.15, 1.65] });
-const waterfallTexture = loadColorTexture('textures/waterfall.jpg', { repeat: [1, 2.8] });
+const waterfallTexture = loadColorTexture('textures/waterfall.jpg', { repeat: [1, 4.2] });
 
 // Seamless photographic sky (equirect — no cubemap edge lines)
 const skyEquirect = loadColorTexture('textures/skybox/sky_equirect.jpg');
@@ -143,14 +143,19 @@ lawn.rotation.x = -Math.PI / 2;
 lawn.receiveShadow = true;
 
 // Paradise Falls tepui (seamless cliff rock)
+const TEPUI_HEIGHT = 14;
+const TEPUI_CENTER_Y = TEPUI_HEIGHT / 2;
+const TEPUI_ROTATION = 0.35;
+const TEPUI_POS = new THREE.Vector3(-16, TEPUI_CENTER_Y, -14);
+
 const tepui = addToScene(
   new THREE.Mesh(
-    new THREE.BoxGeometry(10, 14, 6),
+    new THREE.BoxGeometry(10, TEPUI_HEIGHT, 6),
     new THREE.MeshStandardMaterial({ map: cliffTexture, roughness: 0.94, metalness: 0.02 })
   )
 );
-tepui.position.set(-16, 7, -14);
-tepui.rotation.y = 0.35;
+tepui.position.copy(TEPUI_POS);
+tepui.rotation.y = TEPUI_ROTATION;
 
 const waterfallMaterial = new THREE.MeshStandardMaterial({
   map: waterfallTexture,
@@ -164,15 +169,16 @@ const waterfallMaterial = new THREE.MeshStandardMaterial({
   depthWrite: true,
 });
 
+// Full-height cascade: top of cliff (y=14) down to ground (y=0)
 const waterfall = addToScene(
-  new THREE.Mesh(new THREE.PlaneGeometry(3.8, 10), waterfallMaterial)
+  new THREE.Mesh(new THREE.PlaneGeometry(3.6, TEPUI_HEIGHT), waterfallMaterial)
 );
-waterfall.position.set(-14.2, 6.2, -11.2);
-waterfall.rotation.y = 0.35;
+waterfall.position.set(-14.15, TEPUI_CENTER_Y, -11.12);
+waterfall.rotation.y = TEPUI_ROTATION;
 
 const waterfallMist = addToScene(
   new THREE.Mesh(
-    new THREE.PlaneGeometry(4.6, 3.2),
+    new THREE.PlaneGeometry(4.8, 3.5),
     new THREE.MeshStandardMaterial({
       map: waterfallTexture,
       transparent: true,
@@ -185,8 +191,8 @@ const waterfallMist = addToScene(
     })
   )
 );
-waterfallMist.position.set(-14.0, 2.2, -11.0);
-waterfallMist.rotation.y = 0.35;
+waterfallMist.position.set(-14.0, 1.75, -11.0);
+waterfallMist.rotation.y = TEPUI_ROTATION;
 
 animated.push({
   mesh: waterfall,
@@ -217,7 +223,8 @@ const roof = track(
     new THREE.MeshStandardMaterial({ color: UP.roof, roughness: 0.8 })
   )
 );
-roof.position.y = 3.2;
+// House body top is at y = 1.4 + 2.8/2 = 2.8; sit roof base on top of walls
+roof.position.y = 3.65;
 roof.rotation.y = Math.PI / 4;
 house.add(roof);
 
@@ -227,7 +234,7 @@ const chimney = track(
     new THREE.MeshStandardMaterial({ color: 0x8b4513, roughness: 0.85 })
   )
 );
-chimney.position.set(1.4, 3.5, -0.8);
+chimney.position.set(1.4, 4.35, -0.8);
 house.add(chimney);
 
 const porch = track(
@@ -277,15 +284,15 @@ for (let g = 0; g < 3; g++) {
 const balloonGroup = new THREE.Group();
 house.add(balloonGroup);
 const balloonHolders = [];
-const BALLOON_COUNT = 72;
+const BALLOON_COUNT = 128;
 
 for (let i = 0; i < BALLOON_COUNT; i++) {
   const color = UP.pastelBalloons[i % UP.pastelBalloons.length];
-  const layer = Math.floor(i / 24);
-  const angle = (i / BALLOON_COUNT) * Math.PI * 2 * 3 + layer * 0.4 + (i % 11) * 0.15;
-  const radius = 0.9 + layer * 0.55 + (i % 7) * 0.12;
-  const baseY = 3.6 + layer * 0.75 + (i % 9) * 0.22;
-  const size = 0.2 + (i % 4) * 0.05 + layer * 0.03;
+  const layer = Math.floor(i / 26);
+  const angle = (i / BALLOON_COUNT) * Math.PI * 2 * 4 + layer * 0.35 + (i % 13) * 0.12;
+  const radius = 0.85 + layer * 0.48 + (i % 8) * 0.1;
+  const baseY = 3.5 + layer * 0.62 + (i % 11) * 0.18;
+  const size = 0.17 + (i % 5) * 0.04 + layer * 0.025;
 
   const holder = new THREE.Group();
   const balloon = track(
@@ -329,28 +336,41 @@ animated.push({
   },
 });
 
-// Jungle trees & rocks around the tepui
-for (let t = 0; t < 8; t++) {
-  const angle = (t / 8) * Math.PI * 1.4 - 0.5;
-  const dist = 12 + (t % 3) * 2;
-  const x = Math.cos(angle) * dist - 8;
-  const z = Math.sin(angle) * dist - 6;
+// Trees scattered across the map
+const TREE_COUNT = 42;
+const treeGreens = [0x2d6a4f, 0x358f5c, 0x40916c, 0x1b4332, 0x52b788];
+
+for (let t = 0; t < TREE_COUNT; t++) {
+  const angle = (t / TREE_COUNT) * Math.PI * 2 + t * 0.47;
+  const dist = 9 + (t % 10) * 2.4 + Math.floor(t / 9) * 2.5;
+  const x = Math.cos(angle) * dist + ((t % 6) - 3) * 1.1;
+  const z = Math.sin(angle) * dist + ((t % 5) - 2) * 1.3;
+
+  if (Math.hypot(x - 2, z) < 6.5) continue;
+
+  const trunkH = 1.6 + (t % 5) * 0.45;
+  const trunkR = 0.16 + (t % 3) * 0.05;
+  const foliageH = 2.0 + (t % 4) * 0.55;
+  const foliageR = 0.85 + (t % 4) * 0.2;
 
   const trunk = addToScene(
     new THREE.Mesh(
-      new THREE.CylinderGeometry(0.22, 0.32, 2.2, 10),
+      new THREE.CylinderGeometry(trunkR * 0.75, trunkR, trunkH, 10),
       new THREE.MeshStandardMaterial({ color: 0x5c4033, roughness: 0.9 })
     )
   );
-  trunk.position.set(x, 1.1, z);
+  trunk.position.set(x, trunkH / 2, z);
 
   const leaves = addToScene(
     new THREE.Mesh(
-      new THREE.ConeGeometry(1.1, 2.4, 10),
-      new THREE.MeshStandardMaterial({ color: 0x2d6a4f, roughness: 0.8 })
+      new THREE.ConeGeometry(foliageR, foliageH, 10),
+      new THREE.MeshStandardMaterial({
+        color: treeGreens[t % treeGreens.length],
+        roughness: 0.82,
+      })
     )
   );
-  leaves.position.set(x, 2.8, z);
+  leaves.position.set(x, trunkH + foliageH / 2 - 0.15, z);
 }
 
 for (let r = 0; r < 6; r++) {
