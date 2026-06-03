@@ -224,7 +224,7 @@ const roof = track(
   )
 );
 // House body top is at y = 1.4 + 2.8/2 = 2.8; sit roof base on top of walls
-roof.position.y = 3.65;
+roof.position.y = 3.58;
 roof.rotation.y = Math.PI / 4;
 house.add(roof);
 
@@ -234,7 +234,8 @@ const chimney = track(
     new THREE.MeshStandardMaterial({ color: 0x8b4513, roughness: 0.85 })
   )
 );
-chimney.position.set(1.4, 4.35, -0.8);
+// Chimney base rests on the sloped pyramid roof (cone tip ~y 4.38)
+chimney.position.set(1.4, 3.95, -0.8);
 house.add(chimney);
 
 const porch = track(
@@ -437,17 +438,30 @@ animated.push({
   },
 });
 
+// Pseudo-random scatter (stable each load, spread across the lawn)
+function scatter01(index, salt) {
+  const v = Math.sin(index * 12.9898 + salt * 78.233) * 43758.5453;
+  return v - Math.floor(v);
+}
+
+function isNaturePlacementClear(x, z) {
+  if (Math.hypot(x - 2, z) < 7) return false;
+  if (Math.hypot(x - 6.5, z - 8.5) < 3.2) return false;
+  if (Math.hypot(x + 15, z + 13) < 5) return false;
+  return true;
+}
+
 // Trees scattered across the map
-const TREE_COUNT = 42;
+const TREE_COUNT = 95;
 const treeGreens = [0x2d6a4f, 0x358f5c, 0x40916c, 0x1b4332, 0x52b788];
 
 for (let t = 0; t < TREE_COUNT; t++) {
-  const angle = (t / TREE_COUNT) * Math.PI * 2 + t * 0.47;
-  const dist = 9 + (t % 10) * 2.4 + Math.floor(t / 9) * 2.5;
-  const x = Math.cos(angle) * dist + ((t % 6) - 3) * 1.1;
-  const z = Math.sin(angle) * dist + ((t % 5) - 2) * 1.3;
+  const angle = scatter01(t, 1.1) * Math.PI * 2;
+  const dist = 6 + scatter01(t, 2.7) * 32;
+  const x = Math.cos(angle) * dist + (scatter01(t, 3.3) - 0.5) * 10;
+  const z = Math.sin(angle) * dist + (scatter01(t, 4.9) - 0.5) * 10;
 
-  if (Math.hypot(x - 2, z) < 6.5) continue;
+  if (!isNaturePlacementClear(x, z)) continue;
 
   const trunkH = 1.6 + (t % 5) * 0.45;
   const trunkR = 0.16 + (t % 3) * 0.05;
@@ -475,7 +489,7 @@ for (let t = 0; t < TREE_COUNT; t++) {
 }
 
 // Rocks scattered randomly across the map
-const ROCK_COUNT = 48;
+const ROCK_COUNT = 110;
 const rockMaterial = new THREE.MeshStandardMaterial({
   map: cliffTexture,
   roughness: 0.96,
@@ -483,12 +497,12 @@ const rockMaterial = new THREE.MeshStandardMaterial({
 });
 
 for (let r = 0; r < ROCK_COUNT; r++) {
-  const angle = (r / ROCK_COUNT) * Math.PI * 2 + r * 0.91;
-  const dist = 5 + (r % 14) * 2.1 + Math.floor(r / 12) * 2.8;
-  const x = Math.cos(angle) * dist + ((r % 9) - 4) * 0.85;
-  const z = Math.sin(angle) * dist + ((r % 8) - 4) * 1.05;
+  const angle = scatter01(r, 5.5) * Math.PI * 2;
+  const dist = 4 + scatter01(r, 6.2) * 34;
+  const x = Math.cos(angle) * dist + (scatter01(r, 7.8) - 0.5) * 11;
+  const z = Math.sin(angle) * dist + (scatter01(r, 8.4) - 0.5) * 11;
 
-  if (Math.hypot(x - 2, z) < 5.5) continue;
+  if (!isNaturePlacementClear(x, z)) continue;
 
   const size = 0.22 + (r % 7) * 0.14;
   const shapeType = r % 4;
