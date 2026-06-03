@@ -789,7 +789,7 @@ mtlLoader.load('SpiritBlimp.mtl', (materials) => {
   objLoader.setPath('models/');
   objLoader.load('SpiritBlimp.obj', (blimp) => {
     blimp.scale.setScalar(1.4);
-    blimp.position.set(-28, 25, 16);
+    blimp.position.set(-24, 22, 16);
     blimp.rotation.y = Math.PI / 4.5;
     blimp.traverse((child) => {
       if (child.isMesh) {
@@ -802,8 +802,8 @@ mtlLoader.load('SpiritBlimp.mtl', (materials) => {
     animated.push({
       mesh: blimp,
       animateFn: (time) => {
-        blimp.position.x = -28 + Math.sin(time * 0.00025) * 2;
-        blimp.position.y = 25 + Math.sin(time * 0.0004) * 0.8;
+        blimp.position.x = -24 + Math.sin(time * 0.00025) * 2;
+        blimp.position.y = 22 + Math.sin(time * 0.0004) * 0.8;
         blimp.rotation.y = Math.PI / 4.5 + Math.sin(time * 0.00015) * 0.04;
       },
     });
