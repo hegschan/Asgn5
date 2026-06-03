@@ -372,6 +372,84 @@ function createGoldenRetriever() {
   return dog;
 }
 
+function createLegGroup(material, length, radius) {
+  const leg = new THREE.Group();
+  const mesh = new THREE.Mesh(
+    new THREE.CylinderGeometry(radius * 0.85, radius, length, 6),
+    material
+  );
+  mesh.position.y = -length / 2;
+  track(mesh);
+  leg.add(mesh);
+  return leg;
+}
+
+function createDoberman() {
+  const dog = new THREE.Group();
+  const black = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.55, metalness: 0.08 });
+  const brown = new THREE.MeshStandardMaterial({ color: 0x5c3d2e, roughness: 0.6 });
+  const tan = new THREE.MeshStandardMaterial({ color: 0x9a7b5a, roughness: 0.65 });
+  const nose = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.4 });
+  const coneMat = new THREE.MeshStandardMaterial({ color: 0x888888, roughness: 0.7 });
+
+  addFigurePart(
+    new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.22, 0.2), black),
+    dog, [0, 0.28, 0]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.16, 0.16), black),
+    dog, [0.28, 0.32, 0]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 12), black),
+    dog, [0.38, 0.4, 0]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 0.1), tan),
+    dog, [0.48, 0.36, 0.02]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.SphereGeometry(0.04, 8, 8), nose),
+    dog, [0.52, 0.35, 0.04]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.22, 8), black),
+    dog, [0.36, 0.48, 0.06], [0, 0, 0.25]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.22, 8), black),
+    dog, [0.4, 0.48, -0.06], [0, 0, -0.25]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.ConeGeometry(0.09, 0.2, 10), coneMat),
+    dog, [0.38, 0.52, 0], [0.35, 0, 0]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.12, 0.06), brown),
+    dog, [0, 0.22, 0]
+  );
+  addFigurePart(
+    new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.04, 0.28, 6), black),
+    dog, [-0.24, 0.34, 0], [0.5, 0, 0]
+  );
+
+  const fl = createLegGroup(black, 0.2, 0.045);
+  fl.position.set(0.22, 0.2, 0.08);
+  dog.add(fl);
+  const fr = createLegGroup(black, 0.2, 0.045);
+  fr.position.set(0.22, 0.2, -0.08);
+  dog.add(fr);
+  const bl = createLegGroup(black, 0.2, 0.045);
+  bl.position.set(-0.2, 0.2, 0.08);
+  dog.add(bl);
+  const br = createLegGroup(black, 0.2, 0.045);
+  br.position.set(-0.2, 0.2, -0.08);
+  dog.add(br);
+
+  dog.userData.legs = { fl, fr, bl, br };
+  return dog;
+}
+
 const yardFigures = [
   { figure: createOldMan(), x: 5.5 },
   { figure: createYoungBoy(), x: 6.4 },
@@ -839,6 +917,8 @@ gltfLoader.load(
 );
 
 // Extra primary shapes: scouting rocks & berries
+const berryCenterX = 10.2;
+const berryCenterZ = -3.6;
 for (let i = 0; i < 5; i++) {
   addToScene(
     new THREE.Mesh(
@@ -846,8 +926,33 @@ for (let i = 0; i < 5; i++) {
       new THREE.MeshStandardMaterial({ color: 0xc1121f, roughness: 0.6 })
     ),
     null
-  ).position.set(9 + i * 0.35, 0.15, -4 + (i % 2) * 0.4);
+  ).position.set(berryCenterX + i * 0.35, 0.15, berryCenterZ + (i % 2) * 0.4);
 }
+
+// Doberman patrol (Up villain dogs — Alpha-style) near the red berries
+const doberman = createDoberman();
+const dobermanPatrol = { x: berryCenterX + 0.5, z: berryCenterZ + 0.8 };
+const dobermanRadius = 1.6;
+doberman.position.set(dobermanPatrol.x + dobermanRadius, 0, dobermanPatrol.z);
+doberman.rotation.y = Math.PI / 2;
+scene.add(doberman);
+
+animated.push({
+  mesh: doberman,
+  animateFn: (time) => {
+    const t = time * 0.0014;
+    doberman.position.x = dobermanPatrol.x + Math.cos(t) * dobermanRadius;
+    doberman.position.z = dobermanPatrol.z + Math.sin(t) * dobermanRadius;
+    doberman.rotation.y = -t + Math.PI / 2;
+
+    const stride = Math.sin(t * 9) * 0.55;
+    const { fl, fr, bl, br } = doberman.userData.legs;
+    fl.rotation.x = stride;
+    fr.rotation.x = -stride;
+    bl.rotation.x = -stride;
+    br.rotation.x = stride;
+  },
+});
 
 console.log(`Primary shapes in scene: ${primaryShapes.length}`);
 

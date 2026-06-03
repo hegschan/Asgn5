@@ -43,6 +43,7 @@ Then visit:
 - **Spirit of Adventure blimp** : custom OBJ+MTL model in the left sky (visible on load)
 - **Procedural bird** with articulated wings
 - **Yard figures** : old man, boy, golden retriever
+- **Doberman patrol** : villain-dog style figure circling the red berries with animated legs
 - **140 trees** and **155 rocks** scattered across the map
 - **42 cloud** clusters
 
