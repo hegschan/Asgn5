@@ -9,7 +9,12 @@ const UP = {
   grass: 0x4a7c3f,
   house: 0xd9c9a8,
   roof: 0x6b3e2e,
-  balloon: [0xe63946, 0x457b9d, 0xf4d35e, 0xc1121f, 0x1d3557, 0xff6b6b],
+  pastelBalloons: [
+    0xffb3ba, 0xffdfba, 0xffffba, 0xbaffc9, 0xbae1ff,
+    0xe0bbe4, 0xffd1dc, 0xb5ead7, 0xc7ceea, 0xffdac1,
+    0xf8c8dc, 0xa8d8ea, 0xf9e79f, 0xd5a6bd, 0xc9e4de,
+    0xffc8dd, 0xc3bef7, 0xf3c6c6, 0xfadadd,
+  ],
   tepui: 0x6b5b4a,
   birdBody: 0x1a2d5a,
   birdFeather: 0x243b6e,
@@ -244,45 +249,46 @@ for (let g = 0; g < 3; g++) {
   gnomeBody.position.set(5.5 + g * 0.9, 0.18, 8.5);
 }
 
-// Balloons lifting the house
+// Balloons lifting the house — many pastel balloons in layered clusters
 const balloonGroup = new THREE.Group();
 house.add(balloonGroup);
-const balloonMeshes = [];
+const balloonHolders = [];
+const BALLOON_COUNT = 72;
 
-for (let i = 0; i < 22; i++) {
-  const color = UP.balloon[i % UP.balloon.length];
+for (let i = 0; i < BALLOON_COUNT; i++) {
+  const color = UP.pastelBalloons[i % UP.pastelBalloons.length];
+  const layer = Math.floor(i / 24);
+  const angle = (i / BALLOON_COUNT) * Math.PI * 2 * 3 + layer * 0.4 + (i % 11) * 0.15;
+  const radius = 0.9 + layer * 0.55 + (i % 7) * 0.12;
+  const baseY = 3.6 + layer * 0.75 + (i % 9) * 0.22;
+  const size = 0.2 + (i % 4) * 0.05 + layer * 0.03;
+
+  const holder = new THREE.Group();
   const balloon = track(
     new THREE.Mesh(
-      new THREE.SphereGeometry(0.28 + (i % 3) * 0.06, 14, 14),
+      new THREE.SphereGeometry(size, 12, 12),
       new THREE.MeshStandardMaterial({
         color,
-        roughness: 0.25,
-        metalness: 0.05,
+        roughness: 0.22,
+        metalness: 0.04,
         emissive: color,
-        emissiveIntensity: 0.08,
+        emissiveIntensity: 0.1,
       })
     )
   );
-  const angle = (i / 22) * Math.PI * 2;
-  const radius = 1.2 + (i % 4) * 0.25;
-  balloon.position.set(
-    Math.cos(angle) * radius,
-    4.2 + (i % 5) * 0.35,
-    Math.sin(angle) * radius
-  );
-  balloon.userData.phase = i * 0.7;
-  balloonMeshes.push(balloon);
-  balloonGroup.add(balloon);
-
   const string = track(
     new THREE.Mesh(
-      new THREE.CylinderGeometry(0.012, 0.012, 1.6, 4),
-      new THREE.MeshStandardMaterial({ color: 0x333333 })
+      new THREE.CylinderGeometry(0.008, 0.008, 1.4, 4),
+      new THREE.MeshStandardMaterial({ color: 0x444444 })
     )
   );
-  string.position.copy(balloon.position);
-  string.position.y -= 0.9;
-  balloonGroup.add(string);
+  string.position.y = -0.75;
+  holder.add(balloon);
+  holder.add(string);
+  holder.position.set(Math.cos(angle) * radius, baseY, Math.sin(angle) * radius);
+  holder.userData = { phase: i * 0.55, baseY };
+  balloonGroup.add(holder);
+  balloonHolders.push(holder);
 }
 
 house.position.set(2, 7.5, 0);
@@ -292,8 +298,9 @@ animated.push({
   animateFn: (time) => {
     house.position.y = 7.5 + Math.sin(time * 0.0012) * 0.35;
     house.rotation.y = Math.sin(time * 0.0004) * 0.04;
-    balloonMeshes.forEach((b) => {
-      b.position.y = 4.2 + (b.userData.phase % 5) * 0.35 + Math.sin(time * 0.002 + b.userData.phase) * 0.15;
+    balloonHolders.forEach((holder) => {
+      holder.position.y =
+        holder.userData.baseY + Math.sin(time * 0.002 + holder.userData.phase) * 0.14;
     });
   },
 });
@@ -333,27 +340,48 @@ for (let r = 0; r < 6; r++) {
   rock.rotation.set(r, r * 0.5, 0);
 }
 
-// Fluffy clouds
-const clouds = [];
-for (let c = 0; c < 10; c++) {
+// Fluffy clouds — same puff style, many clusters across the sky
+function createFluffyCloud(puffCount, scale = 1) {
   const cloud = new THREE.Group();
-  const puffCount = 3 + (c % 3);
   for (let p = 0; p < puffCount; p++) {
     const puff = track(
       new THREE.Mesh(
-        new THREE.SphereGeometry(0.9 + p * 0.25, 12, 12),
+        new THREE.SphereGeometry((0.9 + p * 0.25) * scale, 12, 12),
         new THREE.MeshStandardMaterial({
           color: UP.cloud,
           roughness: 1,
           transparent: true,
-          opacity: 0.92,
+          opacity: 0.9 + (p % 2) * 0.04,
         })
       )
     );
-    puff.position.set(p * 1.1 - 1, (p % 2) * 0.2, (p % 3) * 0.3);
+    puff.position.set((p * 1.1 - 1) * scale, (p % 2) * 0.2 * scale, (p % 3) * 0.3 * scale);
     cloud.add(puff);
   }
-  cloud.position.set(-20 + c * 4.5, 16 + (c % 4) * 2, -15 + (c % 5) * 3);
+  return cloud;
+}
+
+const clouds = [];
+const CLOUD_COUNT = 42;
+
+for (let c = 0; c < CLOUD_COUNT; c++) {
+  const puffCount = 3 + (c % 3);
+  const scale = 0.5 + (c % 8) * 0.11;
+  const cloud = createFluffyCloud(puffCount, scale);
+  const spread = 38;
+  cloud.position.set(
+    (c / CLOUD_COUNT) * spread * 2 - spread + (c % 5) * 1.2,
+    13 + (c % 9) * 1.6 + Math.floor(c / 7) * 0.8,
+    -28 + (c % 11) * 5.2 + Math.floor(c / 5) * 1.5
+  );
+  cloud.userData = {
+    index: c,
+    baseY: cloud.position.y,
+    baseZ: cloud.position.z,
+    drift: 0.004 + (c % 6) * 0.002,
+    wrapMin: -spread - 8,
+    wrapMax: spread + 8,
+  };
   scene.add(cloud);
   clouds.push(cloud);
 }
@@ -361,10 +389,12 @@ for (let c = 0; c < 10; c++) {
 animated.push({
   mesh: clouds[0],
   animateFn: (time) => {
-    clouds.forEach((cloud, i) => {
-      cloud.position.x += 0.008;
-      cloud.position.y = 16 + (i % 4) * 2 + Math.sin(time * 0.0008 + i) * 0.4;
-      if (cloud.position.x > 28) cloud.position.x = -28;
+    clouds.forEach((cloud) => {
+      const d = cloud.userData;
+      cloud.position.x += d.drift;
+      cloud.position.y = d.baseY + Math.sin(time * 0.0008 + d.index) * 0.45;
+      cloud.position.z = d.baseZ + Math.sin(time * 0.0005 + d.index * 0.7) * 0.35;
+      if (cloud.position.x > d.wrapMax) cloud.position.x = d.wrapMin;
     });
   },
 });
